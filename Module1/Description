@@ -3,7 +3,6 @@
 Paper Abstract Summarizer is a lightweight Python tool that uses natural language processing models to automatically generate concise summaries of scientific paper abstracts. This project leverages Hugging Face’s transformers library with pre-trained models to help quickly grasp the key points of lengthy abstracts.
 
 ## Features
-
 Summarizes long abstracts into shorter, easy-to-read versions
 Uses advanced transformer models (e.g., DistilBART) for high-quality summaries
 Simple Python API that can be integrated into research workflows or web apps
