@@ -1,0 +1,3 @@
+# Investigate a drug that failed at a specific stage in the preclinical or clinical trials, analyze the reasons for its failure, and explore how AI tools could have potentially impacted the drug development process.
+
+# Use AI to analyze scientific literature related to the drug's failure. For this task, run the code below with your paper's abstract. Replace the text object with your abstract. For demonstration purposes, I ran the code with an abstract from a paper I found (Sun et. al). 
