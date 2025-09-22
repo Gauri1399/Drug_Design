@@ -7,7 +7,7 @@ from transformers import pipeline
 # Load a pre-trained NLP model for summarization
 summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
-# Abstract text from the paper (Sun et al.)
+# Abstract text from the paper (you can replace with your own paper)
 text = """
 Ninety percent of clinical drug development fails despite implementation of many successful strategies, which raised the question whether certain aspects in target validation and drug optimization are overlooked? Current drug optimization overly emphasizes potency/specificity using structure‒activity-relationship (SAR) but overlooks tissue exposure/selectivity in disease/normal tissues using structure‒tissue exposure/selectivity–relationship (STR), which may mislead the drug candidate selection and impact the balance of clinical dose/efficacy/toxicity.
 We propose structure‒tissue exposure/selectivity–activity relationship (STAR) to improve drug optimization, which classifies drug candidates based on drug's potency/selectivity, tissue exposure/selectivity, and required dose for balancing clinical efficacy/toxicity.
