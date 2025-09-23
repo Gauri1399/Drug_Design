@@ -1,0 +1,97 @@
+
+# Step 1: Read PDB file snd extract important information
+FUNCTION read_pdb_file(pdb_file):
+	protein = load_structure(pdb_file)
+	
+	# Calculate molecular surface and cavities of the protein
+	mol_surface = find_molecular_surface(protein)
+	cavities = find_cavity(mol_surface)
+	
+	RETURN cavities
+
+
+# Step 2: Extract the volume, depth, enclosure of the cavity 
+FUNCTION measure_cavity_features(cavities):
+	cavity_features = []
+	FOR each cavity in cavities:
+		features = {
+			volume: calculate_volume(cavity),
+			depth: calculate_depth(cavity),
+			enclosure: calculate_enclosure(cavity)
+			center: calculate_center_coordinates(cavity)
+		}
+		cavity_features.append(features)
+	
+	RETURN cavity_features
+
+
+
+# Step 3: Classify if cavities are pockets by calculating likeness score
+FUNCTION classify_cavity(cavity_features, threshold_score):
+	pockets = [] 
+
+	# Calculate pocket-likeness score                                   
+	FOR each feature IN cavity_features:
+		pocket_score = compute_pocket_score(
+		vol = feature["volume"],
+		depth = feature["depth"],
+		enclosure = feature["enclosure"]
+		)
+
+		# Check if score is higher than threshold and store as pocket 
+		if pocket_score > threshold_score:
+			pockets.append({
+			"center": feature["center"], 
+			"pocket_score": pocket_score
+			}) 
+	
+	RETURN pockets
+
+
+# Step 4: Load necessary protein data to compute features to classify if pocket is allosteric or active
+FUNCTION load_datasets(pdb_url):
+	catalytic_residues = load_catalytic_residues(pdb_url)
+	active_sites = load_active_sites(pdb_url)
+	
+	RETURN catalytic_residues, active_sites
+
+
+# Step 5: Use datasets to calculate threshold values
+FUNCTION calculate_threshold_values(catalytic_residues, active_sites):
+	FOR each residue IN catalytic_residues:
+		dist_cr_threshold = mean(calculate_eucleadian_dist(residue))
+	
+	FOR each site IN active_sites:
+			dist_active_site_threshold = mean(calculate_eucleadian_dist(site))
+
+	RETURN dist_active_site_threshold, dist_cr_threshold
+
+
+# Step 6: Calculate features and classify pockets into ACTIVE or ALLOSTERIC sites
+	FUNCTION classify_pockets(pockets, catalytic_residues, active_sites, dist_cr_threshold, dist_active_site_threshold):
+		classified_pockets = []
+		
+		FOR pocket IN pockets:
+			center = pocket["center"]
+
+			# Calculate catalytic residue and active site distances for each pocket
+			dist_cr = compute_min_dist(center, catalytic_residues)
+			dist_active_site = compute_min_dist(center, active_sites)
+
+			# Compare distance to threshold values
+			IF dist_cr < dist_cr_threshold:
+				label = "ACTIVE"
+			ELSE IF dist_active_site < dist_active_site_threshold:
+				label = "ALLOSTERIC"
+			ELSE:
+				label = "UNKNOWN"
+
+			# Append label to list	
+			classified_pockets.append({
+				"center": pocket["center"], 
+				"pocket_score": pocket["pocket_score"], 
+				"label": label
+			})
+
+		RETURN classified_pockets
+
