@@ -9,5 +9,6 @@ Simple Python API that can be integrated into research workflows or web apps
 Ideal for literature review, academic writing, or knowledge extraction
 
 ## How it works
-The tool loads a pre-trained summarization model and applies it to the abstract text. It produces a condensed summary that retains the most important information, helping users save time when scanning through multiple papers.
-Replace the "text" variable with a paragraph you want to summerize 
+1. The tool loads a pre-trained summarization model and applies it to the abstract text. It produces a condensed summary that retains the most important information, helping users save time when scanning through multiple papers.
+2. Replace the text variable with the paragraph you'd like to summarize.
+3. Adjust the word_count value to set the desired length of your summary.
