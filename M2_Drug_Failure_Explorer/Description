@@ -1,0 +1,36 @@
+
+## Installation
+Make sure you have Python 3 installed, then install the required packages:
+
+```bash
+pip install biopython py3Dmol spacy matplotlib requests
+python -m spacy download en_core_web_sm
+```
+---
+
+## Usage
+1. Update the `main()` function in the script with your:
+   * **Drug name** (the drug you want to analyze)
+   * **Target protein UniProt ID** (protein interacting with the drug)
+
+2. Run the script:
+```bash
+python your_script_name.py
+```
+
+3. The script will:
+   * Search PubChem for the drug compound ID.
+   * Retrieve PubMed articles related to failed clinical trials of the drug.
+   * Extract and display common failure reasons from abstracts.
+   * Download and visualize the AlphaFold structure of the target protein.
+
+---
+
+
+References:
+
+Jumper, J., Evans, R., Pritzel, A., Green, T., Figurnov, M., Ronneberger, O., ... & Hassabis, D. (2021). Highly accurate protein structure prediction with AlphaFold. Nature, 596(7873), 583–589. https://doi.org/10.1038/s41586-021-03819-2
+Honnibal, M., Montani, I., Van Landeghem, S., & Boyd, A. (2020). spaCy: Industrial-strength natural language processing in Python. Explosion AI. Retrieved from https://spacy.io/
+National Center for Biotechnology Information (NCBI). (2023). Entrez programming utilities help. National Library of Medicine. Retrieved from https://www.ncbi.nlm.nih.gov/books/NBK25500/
+National Center for Biotechnology Information (NCBI). (2023). PubChem: Open chemistry database. National Library of Medicine. Retrieved from https://pubchem.ncbi.nlm.nih.gov
+Varadi, M., Anyango, S., Deshpande, M., Nair, S., Natassia, C., Yordanova, G., ... & Velankar, S. (2022). AlphaFold protein structure database: Massively expanding the structural coverage of protein-sequence space. Nucleic Acids Research, 50(D1), D439–D444. https://doi.org/10.1093/nar/gkab1061
