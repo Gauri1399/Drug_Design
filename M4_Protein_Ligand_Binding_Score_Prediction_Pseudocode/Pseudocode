@@ -1,0 +1,147 @@
+# Protein selection & Description 
+# Select a single protein that you want to test ligand binding scores 
+
+FUNCTION get_protein(target_criteria):
+	candidate_proteins = QUERY_PDB(target_criteria)
+
+
+	FILTER test_protein_id FROM candidate_proteins
+		WHERE (resolution ≤ threshold AND has_ligand_binding_site == TRUE)
+
+	FETCH test_protein_structure FROM PDB using test_protein_id
+	EXTRACT test_protein_feature FROM test_protein_structure 
+
+	RETURN test_protein_id, test_protein_feature
+
+
+# Ligand Selection & Justification
+
+FUNCTION get_ligands(keywords):
+    ligands = QUERY_PUBCHEM(keywords)
+
+    # Lapinski's Rule of 5
+    FILTER ligand_ids FROM ligands WHERE
+        molecular_weight BETWEEN 250 AND 500
+        AND logP BETWEEN 0 AND 5
+        AND num_HBD ≤ 5
+        AND num_HBA ≤ 10
+
+    test_ligand_ids = ligand_ids[0:3]
+
+    FOR EACH ligand_id in test_ligand_ids
+        FETCH ligand_structure FROM PubChem USING ligand_id
+        EXTRACT ligand_features FROM ligand_structure
+
+    RETURN ligand_ids, ligand_features
+
+
+# AI Model Setup & Execution - DeepAffinity
+
+## Step 1: Initialize AI model 
+INITIALIZE model = load_pretrained_model("DeepAffinity") # Developed by Karimi et al., 2019.
+# e.g., importing DeepAffinity or loading pretrained encoders
+FROM deepaffinity IMPORT load_model, encode_protein, encode_ligand
+
+
+# We get training data from PubChem and PDB related to our protein to train dataset for accuracy
+train_protein_ids = QUERY_PDB(target_criteria)
+train_ligand_id = QUERY_PUBCHEM(target_criteria)
+
+
+## Step 2: Prepare training data
+FOR EACH train_protein_id in train_protein_ids
+    FETCH train_protein_sequences FROM Uniprot 
+
+FOR EACH train_ligand_id in train_ligand_ids 
+    FETCH train_ligand_SMILES FROM PubChem 
+
+FOR EACH train_protein_id in train_protein_ids:
+    FOR EACH train_ligand_id IN train_ligand_ids:
+        FETCH affinity FROM BindingDB USING train_protein_id, train_ligand_id
+        IF affinity EXISTS:
+            train_binding_affinities[(train_protein_id, train_ligand_id)] 
+
+
+## Step 3: Encode Inputs
+
+FOR EACH protein_sequence IN protein_sequences:
+    encoded_protein = encode_protein(train_protein_sequence)   # BiLSTM or CNN encoder
+
+FOR EACH ligand_SMILES IN ligand_SMILES_list:
+    encoded_ligand = encode_ligand(train_ligand_SMILES)        # GCN or RNN encoder
+
+
+## Step 4: Prepare Training Dataset
+
+training_dataset = []
+FOR EACH binding_affinity in binding_affinities
+    dataset.APPEND({
+        "protein_features": encoded_protein[protein_id],
+        "ligand_features": encoded_ligand[ligand_id],
+        "affinity": affinity
+    })
+
+
+## Step 5: Train DeepAffinity Model
+
+FOR epoch IN range(num_epochs):
+    FOR batch IN training_dataset.batches(batch_size):
+        predictions = model.forward(batch.protein_features, batch.ligand_features)
+        loss = compute_loss(predictions, batch.affinity)
+        model.backward(loss)
+        model.update_weights()
+
+
+# Analysis: Apply Trained Model to New Dataset
+
+LOAD training_data FROM "DeepAffinity"
+
+target_criteria = "kinase involved in cancer"
+protein = get_protein(target_criteria)
+# Output : protein_id, protein_feature
+
+
+keyword = "kinase inhibitor"
+ligands = get_ligands(keyword)
+# Output : ligand_ids, ligand_features
+ 
+RETRIEVE protein_seq FROM PDB USING protein_id
+encoded_protein_features = encode_protein(protein_seq)
+
+FOR each ligand IN ligand_ids:
+    RETRIEVE ligand_smiles FROM PubChem USING ligand
+    encoded_ligand_feature = encode_ligand(ligand_smiles)
+
+    binding_score = trained_model.PREDICT(encoded_protein_feature, encoded_ligand_feature)
+
+    STORE_RESULT(protein=protein_id, protein_features = protein_features,
+    			 ligand=ligand_id, ligand_features = ligand_features, 
+    			 score=binding_score)
+
+EXPORT_RESULTS("predicted_binding_affinities.csv")
+
+filename = predicted_binding_affinities.csv
+
+
+# Result & Analysis
+# Visualize binding scores
+FUNCTION PLOT_BINDING_AFFINITIES(filename):
+    data = READ_CSV(filename)
+
+    ligand_ids = []
+    binding_scores = []
+
+    FOR each row IN data:
+        ligand_ids.APPEND(row["Ligand_ID"])
+        binding_scores.APPEND(row["Binding_Score"])
+
+    CREATE bar_chart with:
+        x-axis = ligand_ids
+        y-axis = binding_scores
+        title = "Predicted Binding Affinities"
+        x_label = "Ligands"
+        y_label = "Binding Affinity Score"
+
+    DISPLAY bar_chart
+
+
