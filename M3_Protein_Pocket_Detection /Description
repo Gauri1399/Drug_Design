@@ -1,0 +1,62 @@
+
+#Protein Cavity Detection and Classification Pipeline
+
+This pipeline is designed to process a protein structure file (PDB format), detect cavities on the molecular surface, and classify them as ACTIVE, ALLOSTERIC, or UNKNOWN binding pockets based on geometric and biochemical criteria. The steps involved are as follows:
+
+---
+
+## Step 1: Read and Process the PDB File
+* Loads a protein structure from a PDB file.
+* Calculates the molecular surface.
+* Identifies potential cavities on the surface.
+
+---
+
+## Step 2: Measure Cavity Geometric Features
+
+* For each detected cavity, calculates:
+  * Volume
+  * Depth
+  * Enclosure
+  * Center coordinates
+* Returns a feature list used for further classification.
+
+---
+
+## Step 3: Classify Cavities as Potential Pockets
+
+* Computes a pocket-likeness score based on volume, depth, and enclosure.
+* Compares each score to a predefined threshold.
+* Classifies high-scoring cavities as potential **binding pockets** and stores their center and score.
+
+---
+
+## Step 4: Load Catalytic and Active Site Data
+
+* Loads annotated "catalytic residues" and "active site" information for the given protein.
+* These are used to determine the functional relevance of each pocket.
+
+---
+
+## Step 5: Calculate Distance Thresholds
+
+* Calculates average Euclidean distances to define threshold values for:
+  * Catalytic residue proximity
+  * Active site proximity
+* These thresholds help in classifying pocket functionality.
+
+---
+
+## Step 6: Classify Pockets by Functional Type
+
+* For each candidate pocket:
+  * Computes the distance to the nearest **catalytic residue** and **active site**.
+  * Compares distances to the corresponding thresholds.
+  * Assigns a label:
+    * `"ACTIVE"` if close to catalytic residues.
+    * `"ALLOSTERIC"` if close to active site but not catalytic.
+    * `"UNKNOWN"` otherwise.
+* Returns a list of labeled pockets, including their center coordinates and pocket-likeness scores.
+
+---
+
