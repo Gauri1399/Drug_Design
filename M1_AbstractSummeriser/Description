@@ -10,3 +10,4 @@ Ideal for literature review, academic writing, or knowledge extraction
 
 ## How it works
 The tool loads a pre-trained summarization model and applies it to the abstract text. It produces a condensed summary that retains the most important information, helping users save time when scanning through multiple papers.
+Replace the "text" variable with a paragraph you want to summerize 
