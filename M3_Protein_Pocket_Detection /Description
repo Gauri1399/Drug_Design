@@ -1,62 +1,52 @@
+# 🧬 Protein-Ligand Binding Prediction with Pocket Detection
 
-#Protein Cavity Detection and Classification Pipeline
-
-This pipeline is designed to process a protein structure file (PDB format), detect cavities on the molecular surface, and classify them as ACTIVE, ALLOSTERIC, or UNKNOWN binding pockets based on geometric and biochemical criteria. The steps involved are as follows:
-
----
-
-## Step 1: Read and Process the PDB File
-* Loads a protein structure from a PDB file.
-* Calculates the molecular surface.
-* Identifies potential cavities on the surface.
+## Project Overview
+This project integrates **protein structure analysis** and **AI-based ligand binding prediction** to identify active and allosteric binding sites and predict binding affinities for small molecules. It combines **structural bioinformatics** (PDB analysis, cavity/pocket detection) with **machine learning / deep learning** (DeepAffinity) to provide a complete ligand screening workflow.
 
 ---
 
-## Step 2: Measure Cavity Geometric Features
+## Workflow
 
-* For each detected cavity, calculates:
-  * Volume
-  * Depth
-  * Enclosure
-  * Center coordinates
-* Returns a feature list used for further classification.
+### Step 1: Protein Pocket Analysis
+- Load protein structures from **PDB files**.
+- Calculate **molecular surfaces** and detect **cavities/pockets**.
+- Extract cavity features: **volume, depth, enclosure, center coordinates**.
+- Compute **pocket-likeness scores** to classify cavities as potential binding pockets.
+- Load datasets of **catalytic residues** and **active sites** to classify pockets as:
+  - **ACTIVE**
+  - **ALLOSTERIC**
+  - **UNKNOWN**
 
----
+### Step 2: Protein & Ligand Selection
+- Select protein based on structural criteria (resolution, ligand binding site availability).
+- Query **PubChem** for ligands using keywords and apply **Lipinski's Rule of 5**.
+- Fetch ligand structures and compute features.
 
-## Step 3: Classify Cavities as Potential Pockets
+### Step 3: DeepAffinity Model – AI-based Binding Prediction
+- **Initialize pretrained DeepAffinity model** (Karimi et al., 2019).
+- Encode protein sequences and ligand SMILES using model encoders (BiLSTM/CNN for protein, GCN/RNN for ligand).
+- Prepare training dataset from **BindingDB** or PubChem-PDB pairs.
+- Train DeepAffinity to predict binding affinities.
+- Predict binding scores for selected protein-ligand pairs.
 
-* Computes a pocket-likeness score based on volume, depth, and enclosure.
-* Compares each score to a predefined threshold.
-* Classifies high-scoring cavities as potential **binding pockets** and stores their center and score.
-
----
-
-## Step 4: Load Catalytic and Active Site Data
-
-* Loads annotated "catalytic residues" and "active site" information for the given protein.
-* These are used to determine the functional relevance of each pocket.
-
----
-
-## Step 5: Calculate Distance Thresholds
-
-* Calculates average Euclidean distances to define threshold values for:
-  * Catalytic residue proximity
-  * Active site proximity
-* These thresholds help in classifying pocket functionality.
+### Step 4: Results Analysis
+- Store predicted binding affinities in `predicted_binding_affinities.csv`.
+- Visualize binding scores using bar charts.
+- Identify ligands with highest predicted binding to target protein pockets.
 
 ---
 
-## Step 6: Classify Pockets by Functional Type
-
-* For each candidate pocket:
-  * Computes the distance to the nearest **catalytic residue** and **active site**.
-  * Compares distances to the corresponding thresholds.
-  * Assigns a label:
-    * `"ACTIVE"` if close to catalytic residues.
-    * `"ALLOSTERIC"` if close to active site but not catalytic.
-    * `"UNKNOWN"` otherwise.
-* Returns a list of labeled pockets, including their center coordinates and pocket-likeness scores.
+## Features
+- Detect protein cavities and classify them as active/allosteric sites.
+- Select ligands based on structural and drug-like criteria.
+- Use **AI (DeepAffinity)** to predict binding affinities.
+- Combine bioinformatics and cheminformatics workflows.
+- Output CSV for binding scores and bar chart visualizations.
 
 ---
 
+## Installation
+Requires Python 3.x and the following libraries:
+
+```bash
+pip install rdkit biopandas numpy pandas matplotlib scikit-learn requests
