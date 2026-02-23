@@ -1,0 +1,22 @@
+# 🧬 Protein Interface & Pocket Analysis with ML and 3D Visualization
+
+## Project Overview
+This Python-based bioinformatics workflow analyzes protein structures from the PDB to identify key functional regions. The pipeline integrates structural analysis, interface detection, pocket feature extraction, machine learning classification, and interactive 3D visualization.
+
+**Key Features:**
+- **PDB Download & Parsing:** Automatically fetch PDB files and extract chains and residues.  
+- **Interface Residue Detection:** Identify residues at protein-protein interfaces using a configurable distance threshold.  
+- **Pocket Feature Extraction:** Compute hydrophobicity, net charge, and residue counts for central pockets.  
+- **Machine Learning Classification:** Train a Random Forest model to predict activity or functional relevance of interfaces/pockets.  
+- **3D Visualization:** Render interactive 3D structures using `py3Dmol` highlighting interfaces (red) and pockets (blue).  
+
+This workflow provides a foundation for studying active or allosteric sites in proteins and can be extended to real experimental datasets.
+
+---
+
+## How to Access & Use
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/protein-interface-pocket-analysis.git
+cd protein-interface-pocket-analysis
