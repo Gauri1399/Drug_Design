@@ -23,12 +23,12 @@ python -m spacy download en_core_web_sm
 
 ## Usage
 1. Update the `main()` function in the script with your:
-   * **Drug name** (the drug you want to analyze)
-   * **Target protein UniProt ID** (protein interacting with the drug)
+   * **Drug name** - the drug you want to analyze
+   * **Target protein UniProt ID** - protein interacting with the drug
 
 2. Run the script:
 ```bash
-python your_script_name.py
+python Code.py
 ```
 
 3. The script will:
