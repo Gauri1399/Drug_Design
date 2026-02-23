@@ -46,5 +46,5 @@ Make sure Python 3.x is installed. Then install the required packages:
 ```bash
 pip install rdkit biopandas numpy pandas matplotlib scikit-learn
 
-git clone https://github.com/Gauri1399/SmileML.git
-cd SmileML
+git clone https://github.com/Gauri1399/05_ML_Smile_Screening.git
+cd 05_ML_Smile_Screening
