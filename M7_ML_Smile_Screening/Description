@@ -1,24 +1,50 @@
-# SMILES-Based Molecule Activity Prediction with ML
+# SmileML – SMILES-Based Molecule Activity Prediction with ML
 
 ## Project Overview
-SmileML is a Python workflow that predicts the biological activity of chemical compounds directly from their **SMILES strings**. Using **molecular descriptors** and **machine learning models**, the project allows chemists and researchers to quickly screen small molecules for potential activity.
+SmileML is a Python workflow that predicts the biological activity of chemical compounds directly from **SMILES strings**. It uses **molecular descriptors**, **fingerprint similarity**, and **machine learning models** to classify compounds as active or inactive. This workflow allows researchers and chemists to quickly screen small molecules for potential activity.
 
-**How it works:**
-1. **SMILES Input:** Users provide a list of SMILES strings representing molecules.
-2. **Descriptor Calculation:** Computes molecular features such as **Molecular Weight, LogP, TPSA**, and optionally others using **RDKit**.
-3. **Fingerprint Analysis:** Generates **Morgan fingerprints** and calculates **Tanimoto similarity** between molecules.
-4. **Machine Learning Prediction:** Trains a model (e.g., Random Forest) to classify compounds as **active or inactive** based on descriptors.
-5. **Model Validation:** Evaluates performance using metrics like **R², RMSE, MAE**, and performs **Y-randomization** to check for chance correlations.
+---
 
-**Key Features:**
-- SMILES parsing and molecule validation
-- Molecular descriptor calculation and fingerprint generation
-- Similarity analysis using Tanimoto scores
-- Machine learning classification and performance evaluation
-- Flexible and extendable for additional descriptors or ML models
+## Features
+- Input molecules as **SMILES strings**
+- Compute molecular descriptors:
+  - Molecular Weight (MolWt)
+  - LogP
+  - Topological Polar Surface Area (TPSA)
+  - Number of H-bond donors/acceptors
+- Generate **Morgan fingerprints** and calculate **Tanimoto similarity**
+- Simulate docking scores and classify compounds as **active/inactive**
+- Train a **Random Forest classifier** for activity prediction
+- Create regression metrics and **Y-randomization** validation for model reliability
+- Easily extendable to include more descriptors, fingerprints, or ML models
 
-**Getting Started:**
-1. Clone the repository:
+---
+
+## How It Works
+1. **SMILES Input:** Enter a list of SMILES strings separated by commas.
+2. **Descriptor Calculation:** Compute key molecular features using RDKit.
+3. **Fingerprint Similarity:** Calculate structural similarity using Morgan fingerprints.
+4. **Docking Simulation:** Simulate docking scores (or use real activity data) to define active/inactive labels.
+5. **Machine Learning:** Train a Random Forest classifier on descriptors to predict activity.
+6. **Validation:** Evaluate model performance with metrics like R², RMSE, MAE, and optionally perform Y-randomization to ensure predictions are not due to chance.
+
+---
+
+## The  workflow produces the following outputs:
+
+- Molecular descriptors for each input SMILES (MolWt, LogP, TPSA, H-bond donors/acceptors)  
+- Tanimoto similarity matrix between molecules  
+- Simulated docking scores and activity labels (active/inactive)  
+- Random Forest classification report  
+- Optional regression metrics and Y-randomization validation
+
+---
+
+## Installation
+Make sure Python 3.x is installed. Then install the required packages:
+
 ```bash
-git clone https://github.com/Gauri1399/M7_ML_Smile_Screening.git
-cd M7_ML_Smile_Screening
+pip install rdkit biopandas numpy pandas matplotlib scikit-learn
+
+git clone https://github.com/Gauri1399/SmileML.git
+cd SmileML
