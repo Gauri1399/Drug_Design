@@ -1,97 +1,128 @@
+# =========================================
+# Protein-Ligand Binding Prediction Workflow
+# =========================================
 
-# Step 1: Read PDB file snd extract important information
+# Step 1: Protein Pocket Analysis
+
 FUNCTION read_pdb_file(pdb_file):
-	protein = load_structure(pdb_file)
-	
-	# Calculate molecular surface and cavities of the protein
-	mol_surface = find_molecular_surface(protein)
-	cavities = find_cavity(mol_surface)
-	
-	RETURN cavities
+    protein = load_structure(pdb_file)
+    mol_surface = find_molecular_surface(protein)
+    cavities = find_cavity(mol_surface)
+    RETURN cavities
 
-
-# Step 2: Extract the volume, depth, enclosure of the cavity 
 FUNCTION measure_cavity_features(cavities):
-	cavity_features = []
-	FOR each cavity in cavities:
-		features = {
-			volume: calculate_volume(cavity),
-			depth: calculate_depth(cavity),
-			enclosure: calculate_enclosure(cavity)
-			center: calculate_center_coordinates(cavity)
-		}
-		cavity_features.append(features)
-	
-	RETURN cavity_features
+    cavity_features = []
+    FOR each cavity IN cavities:
+        features = {
+            "volume": calculate_volume(cavity),
+            "depth": calculate_depth(cavity),
+            "enclosure": calculate_enclosure(cavity),
+            "center": calculate_center_coordinates(cavity)
+        }
+        cavity_features.append(features)
+    RETURN cavity_features
 
-
-
-# Step 3: Classify if cavities are pockets by calculating likeness score
 FUNCTION classify_cavity(cavity_features, threshold_score):
-	pockets = [] 
+    pockets = []
+    FOR feature IN cavity_features:
+        pocket_score = compute_pocket_score(
+            vol=feature["volume"],
+            depth=feature["depth"],
+            enclosure=feature["enclosure"]
+        )
+        IF pocket_score > threshold_score:
+            pockets.append({
+                "center": feature["center"],
+                "pocket_score": pocket_score
+            })
+    RETURN pockets
 
-	# Calculate pocket-likeness score                                   
-	FOR each feature IN cavity_features:
-		pocket_score = compute_pocket_score(
-		vol = feature["volume"],
-		depth = feature["depth"],
-		enclosure = feature["enclosure"]
-		)
-
-		# Check if score is higher than threshold and store as pocket 
-		if pocket_score > threshold_score:
-			pockets.append({
-			"center": feature["center"], 
-			"pocket_score": pocket_score
-			}) 
-	
-	RETURN pockets
-
-
-# Step 4: Load necessary protein data to compute features to classify if pocket is allosteric or active
 FUNCTION load_datasets(pdb_url):
-	catalytic_residues = load_catalytic_residues(pdb_url)
-	active_sites = load_active_sites(pdb_url)
-	
-	RETURN catalytic_residues, active_sites
+    catalytic_residues = load_catalytic_residues(pdb_url)
+    active_sites = load_active_sites(pdb_url)
+    RETURN catalytic_residues, active_sites
 
-
-# Step 5: Use datasets to calculate threshold values
 FUNCTION calculate_threshold_values(catalytic_residues, active_sites):
-	FOR each residue IN catalytic_residues:
-		dist_cr_threshold = mean(calculate_eucleadian_dist(residue))
-	
-	FOR each site IN active_sites:
-			dist_active_site_threshold = mean(calculate_eucleadian_dist(site))
+    dist_cr_threshold = mean_distance(catalytic_residues)
+    dist_active_site_threshold = mean_distance(active_sites)
+    RETURN dist_active_site_threshold, dist_cr_threshold
 
-	RETURN dist_active_site_threshold, dist_cr_threshold
+FUNCTION classify_pockets(pockets, catalytic_residues, active_sites, dist_cr_threshold, dist_active_site_threshold):
+    classified_pockets = []
+    FOR pocket IN pockets:
+        center = pocket["center"]
+        dist_cr = compute_min_dist(center, catalytic_residues)
+        dist_active_site = compute_min_dist(center, active_sites)
+        IF dist_cr < dist_cr_threshold:
+            label = "ACTIVE"
+        ELSE IF dist_active_site < dist_active_site_threshold:
+            label = "ALLOSTERIC"
+        ELSE:
+            label = "UNKNOWN"
+        classified_pockets.append({
+            "center": center,
+            "pocket_score": pocket["pocket_score"],
+            "label": label
+        })
+    RETURN classified_pockets
 
+# =========================================
+# Step 2: Protein & Ligand Selection
 
-# Step 6: Calculate features and classify pockets into ACTIVE or ALLOSTERIC sites
-	FUNCTION classify_pockets(pockets, catalytic_residues, active_sites, dist_cr_threshold, dist_active_site_threshold):
-		classified_pockets = []
-		
-		FOR pocket IN pockets:
-			center = pocket["center"]
+FUNCTION get_protein(target_criteria):
+    candidate_proteins = QUERY_PDB(target_criteria)
+    FILTER proteins WHERE resolution ≤ threshold AND has_ligand_binding_site == TRUE
+    SELECT test_protein
+    FETCH test_protein_structure
+    EXTRACT test_protein_features
+    RETURN test_protein_id, test_protein_features
 
-			# Calculate catalytic residue and active site distances for each pocket
-			dist_cr = compute_min_dist(center, catalytic_residues)
-			dist_active_site = compute_min_dist(center, active_sites)
+FUNCTION get_ligands(keywords):
+    ligands = QUERY_PUBCHEM(keywords)
+    APPLY_LIPINSKI_RULE_OF_5(ligands)
+    SELECT top_3_ligands
+    FETCH ligand_structures
+    EXTRACT ligand_features
+    RETURN ligand_ids, ligand_features
 
-			# Compare distance to threshold values
-			IF dist_cr < dist_cr_threshold:
-				label = "ACTIVE"
-			ELSE IF dist_active_site < dist_active_site_threshold:
-				label = "ALLOSTERIC"
-			ELSE:
-				label = "UNKNOWN"
+# =========================================
+# Step 3: DeepAffinity AI Model Setup
 
-			# Append label to list	
-			classified_pockets.append({
-				"center": pocket["center"], 
-				"pocket_score": pocket["pocket_score"], 
-				"label": label
-			})
+INITIALIZE model = load_pretrained_model("DeepAffinity")
+# Prepare training data
+FOR each protein_sequence IN training_proteins:
+    encoded_protein = encode_protein(protein_sequence)
+FOR each ligand_smiles IN training_ligands:
+    encoded_ligand = encode_ligand(ligand_smiles)
+training_dataset = CREATE_TRAINING_DATASET(encoded_proteins, encoded_ligands, affinities)
 
-		RETURN classified_pockets
+# Train model
+FOR epoch IN range(num_epochs):
+    FOR batch IN training_dataset.batches(batch_size):
+        predictions = model.forward(batch.protein_features, batch.ligand_features)
+        loss = compute_loss(predictions, batch.affinity)
+        model.backward(loss)
+        model.update_weights()
 
+# =========================================
+# Step 4: Predict Binding Affinity for Selected Protein & Ligands
+
+protein_id, protein_features = get_protein(target_criteria)
+ligand_ids, ligand_features = get_ligands(keywords)
+
+encoded_protein = encode_protein(protein_features)
+FOR each ligand IN ligand_ids:
+    encoded_ligand = encode_ligand(ligand_features[ligand])
+    binding_score = model.predict(encoded_protein, encoded_ligand)
+    STORE_RESULT(protein_id, ligand, binding_score)
+
+EXPORT_RESULTS("predicted_binding_affinities.csv")
+
+# =========================================
+# Step 5: Result Analysis & Visualization
+
+FUNCTION plot_binding_affinities(filename):
+    data = READ_CSV(filename)
+    CREATE bar_chart(x=data["Ligand_ID"], y=data["Binding_Score"])
+    SET title = "Predicted Binding Affinities"
+    DISPLAY chart
