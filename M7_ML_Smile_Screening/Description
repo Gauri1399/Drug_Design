@@ -1,0 +1,24 @@
+# SMILES-Based Molecule Activity Prediction with ML
+
+## Project Overview
+SmileML is a Python workflow that predicts the biological activity of chemical compounds directly from their **SMILES strings**. Using **molecular descriptors** and **machine learning models**, the project allows chemists and researchers to quickly screen small molecules for potential activity.
+
+**How it works:**
+1. **SMILES Input:** Users provide a list of SMILES strings representing molecules.
+2. **Descriptor Calculation:** Computes molecular features such as **Molecular Weight, LogP, TPSA**, and optionally others using **RDKit**.
+3. **Fingerprint Analysis:** Generates **Morgan fingerprints** and calculates **Tanimoto similarity** between molecules.
+4. **Machine Learning Prediction:** Trains a model (e.g., Random Forest) to classify compounds as **active or inactive** based on descriptors.
+5. **Model Validation:** Evaluates performance using metrics like **R², RMSE, MAE**, and performs **Y-randomization** to check for chance correlations.
+
+**Key Features:**
+- SMILES parsing and molecule validation
+- Molecular descriptor calculation and fingerprint generation
+- Similarity analysis using Tanimoto scores
+- Machine learning classification and performance evaluation
+- Flexible and extendable for additional descriptors or ML models
+
+**Getting Started:**
+1. Clone the repository:
+```bash
+git clone https://github.com/Gauri1399/M7_ML_Smile_Screening.git
+cd M7_ML_Smile_Screening
