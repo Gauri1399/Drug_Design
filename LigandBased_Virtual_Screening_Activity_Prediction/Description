@@ -1,0 +1,16 @@
+# Ligand-Based Virtual Screening & Activity Prediction
+
+This Python project performs ligand-based virtual screening using **SMILES molecular representations**, **RDKit molecular descriptors**, and **machine learning** to predict compound activity. The workflow allows users to input SMILES strings, compute key descriptors (molecular weight, hydrogen bond donors/acceptors), simulate docking scores, classify compounds as active or inactive with a Random Forest classifier, and analyze results. 
+
+**Features:**
+- SMILES parsing and molecule validation  
+- Molecular descriptor calculation  
+- Docking score simulation and activity labeling  
+- Machine learning classification and evaluation  
+- Interactive analysis and visualization  
+
+**How to Use:**
+1. Clone the repository:  
+```bash
+git clone https://github.com/your-username/ligand-virtual-screening.git
+cd ligand-virtual-screening
