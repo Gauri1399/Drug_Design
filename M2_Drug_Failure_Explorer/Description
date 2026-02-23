@@ -1,3 +1,16 @@
+AI-Driven Drug Failure Analysis & Structural Intelligence Pipeline
+
+##Overview
+This project is a Python-based bioinformatics pipeline that integrates biomedical databases, NLP, and structural biology tools to analyze failed drug candidates and investigate their molecular targets.
+
+Drug development has a >90% failure rate in clinical trials. This system programmatically investigates drug attrition by:
+  * Querying PubChem for compound metadata
+  * Mining PubMed for failed clinical trial publications
+  * Applying NLP (spaCy) to extract failure-related signals
+  * Performing keyword frequency analysis and visualization
+  *Fetching AlphaFold protein structures via UniProt ID
+  * Rendering interactive 3D structural visualizations using py3Dmol
+The project demonstrates how AI-assisted literature mining and structural bioinformatics can be combined to analyze translational drug failures.
 
 ## Installation
 Make sure you have Python 3 installed, then install the required packages:
