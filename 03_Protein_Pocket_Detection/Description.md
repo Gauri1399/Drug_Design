@@ -1,4 +1,4 @@
-# 🧬 Protein-Ligand Binding Prediction with Pocket Detection
+# Protein-Ligand Binding Prediction with Pocket Detection
 
 ## Project Overview
 This project integrates **protein structure analysis** and **AI-based ligand binding prediction** to identify active and allosteric binding sites and predict binding affinities for small molecules. It combines **structural bioinformatics** (PDB analysis, cavity/pocket detection) with **machine learning / deep learning** (DeepAffinity) to provide a complete ligand screening workflow.
